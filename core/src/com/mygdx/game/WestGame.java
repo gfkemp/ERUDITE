@@ -14,6 +14,7 @@ public class WestGame extends ApplicationAdapter {
     Map game;
     private GlyphLayout glyph;
     int count = 0;
+    int wait;
 
     @Override
     public void create () {
@@ -31,11 +32,27 @@ public class WestGame extends ApplicationAdapter {
     public void render () {
             Gdx.gl.glClearColor(0, 0, 0, 1);
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-            batch.begin();
-            if (Gdx.input.isKeyPressed(Input.Keys.ANY_KEY) && count <= 0){
+            
+            if (Gdx.input.isKeyPressed(Input.Keys.ANY_KEY) && count <= 0 && wait == 0){
                 keyPress();
+            } else if (wait > 0){
+                game.update();
+                wait--;
             }
+            
+            batch.begin();
             count--;
+            //game.placeChar();
+            glyph.setText(font, game.getMap());
+            font.draw(batch, glyph, 15, 470);
+            //System.out.print(game.getMap());
+            batch.end();
+    }
+    
+    public void renderNoKeys () {
+            Gdx.gl.glClearColor(0, 0, 0, 1);
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+            batch.begin();
             //game.placeChar();
             glyph.setText(font, game.getMap());
             font.draw(batch, glyph, 15, 470);
@@ -82,7 +99,11 @@ public class WestGame extends ApplicationAdapter {
                 movement[5] = 1;
             }
             
+            if (Gdx.input.isKeyPressed(Input.Keys.W)){
+                wait = 100;
+            }
+            
             game.moveChar(movement);
-            count = 5;
+            count = 7;
     }
 }

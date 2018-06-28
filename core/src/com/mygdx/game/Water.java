@@ -21,7 +21,7 @@ public class Water extends Thing{
         this.xPos = xPos;
         this.yPos = yPos;
         this.depth = depth;
-        symbol = Integer.toString(depth/10);
+        symbol = depthToSymbol();
     }
     
     public void add(int amount){
@@ -30,7 +30,11 @@ public class Water extends Thing{
         if (depth > 70){
             depth = 70;
         }
-        symbol = Integer.toString(depth/10);
+        symbol = depthToSymbol();
+    }
+    
+    public String depthToSymbol(){
+        return Integer.toString(depth/10);
     }
     
     public void flow(){
@@ -95,6 +99,6 @@ public class Water extends Thing{
     public String toString(){
         colour = Integer.toHexString(200-(depth*2));
         String colour2 = Integer.toHexString(200-depth);
-        return "[#" + colour + colour2 + "FF]" + symbol;
+        return "[#" + colour + colour2 + "FF]" + depthToSymbol();
     }
 }

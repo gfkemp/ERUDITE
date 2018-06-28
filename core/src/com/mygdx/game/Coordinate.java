@@ -63,7 +63,9 @@ public class Coordinate extends ArrayList{
     
     public void update(){
         updateWater();
-        checkFertility();
+        if (get(4) == null && !voided){
+            ground.checkFertility();
+        }
     }
     
     public void updateWater(){
@@ -76,17 +78,6 @@ public class Coordinate extends ArrayList{
         }
     }
     
-    public void checkFertility(){
-        if (get(3) == null){
-            if ((map.getCoordinate(xPos, yPos+1).getWaterLevel() == 0) || 
-                    (map.getCoordinate(xPos+1, yPos).getWaterLevel() == 0) || 
-                    (map.getCoordinate(xPos, yPos-1).getWaterLevel() == 0) || 
-                    (map.getCoordinate(xPos-1, yPos).getWaterLevel() == 0)) {
-                ground.setColour("[BROWN]");
-            }
-        }
-    }
-    
     public void setWater(Water water){
         this.water = water;
         set(4, water);
@@ -96,7 +87,7 @@ public class Coordinate extends ArrayList{
         ground.channel();
         this.ground.symbol = " ";
         this.voided = true;
-        set(3, null);
+        removeWater();
     }
 
     public int getxPos() {
@@ -108,7 +99,7 @@ public class Coordinate extends ArrayList{
     }
 
     public int getWaterLevel() {
-        if (get(3) == null){
+        if (get(4) == null){
             return 0;
         }
         return water.getDepth();
@@ -121,13 +112,19 @@ public class Coordinate extends ArrayList{
     public void digChannel() {
         if (!voided){
             ground.channel();
+            removeWater();
         }
+    }
+    
+    public void removeWater(){
+        set(3, null);
+        set(4, null);
     }
 
     public void setGround() {
         voided = false;
         set(0, new Ground(map, xPos, yPos));
-        set(3, null);
+        removeWater();
     }
 
     public void setSource() {
