@@ -5,7 +5,6 @@
  */
 package com.mygdx.game;
 
-import static com.badlogic.gdx.utils.JsonValue.ValueType.array;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -107,6 +106,8 @@ public class Map {
             getCoordinate(xPos, yPos).setSource();
         } else if (movement[5] == 1){
             getCoordinate(xPos, yPos).groundVoid();
+        } else if (movement[6] == 1){
+            getCoordinate(xPos, yPos).setGrass();
         }
         
         yPos += movement[0];
@@ -157,5 +158,13 @@ public class Map {
             a.set(index, a.get(i));
             a.set(i, temp);
         }
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public int getWidth() {
+        return width;
     }
 }

@@ -38,6 +38,9 @@ public class WestGame extends ApplicationAdapter {
             } else if (wait > 0){
                 game.update();
                 wait--;
+            } else if (count > 0){
+                game.update();
+                count--;
             }
             
             batch.begin();
@@ -66,7 +69,7 @@ public class WestGame extends ApplicationAdapter {
     }
     
     public void keyPress(){
-            int[] movement = new int[6];
+            int[] movement = new int[7];
             movement[0] = 0;
             movement[1] = 0;
             movement[2] = 0;
@@ -99,11 +102,15 @@ public class WestGame extends ApplicationAdapter {
                 movement[5] = 1;
             }
             
+            if (Gdx.input.isKeyPressed(Input.Keys.S)){
+                movement[6] = 1;
+            }
+            
             if (Gdx.input.isKeyPressed(Input.Keys.W)){
-                wait = 100;
+                wait = 90;
             }
             
             game.moveChar(movement);
-            count = 7;
+            count = 10;
     }
 }

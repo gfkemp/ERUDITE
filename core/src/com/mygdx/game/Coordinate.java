@@ -19,6 +19,8 @@ public class Coordinate extends ArrayList{
     private WaterSource source;
     private Water water;
     private Ground ground;
+    private Plant plant;
+    private Random r;
     private boolean voided = false;
     
     public Coordinate(Map map, int xPos, int yPos){
@@ -29,7 +31,10 @@ public class Coordinate extends ArrayList{
             add(null);
         }
         
+        r = new Random();
+        
         ground = new Ground(map, xPos, yPos);
+        ground.setFertility(r.nextInt(5));
         water = new Water(map, xPos, yPos, 0);
         
         source = null;
@@ -46,7 +51,6 @@ public class Coordinate extends ArrayList{
                 set(4, water);
             }
         } else {
-            Random r = new Random();
             double count = r.nextInt(5);
             if (count < 2){
                 this.ground.symbol = " ";
@@ -65,6 +69,10 @@ public class Coordinate extends ArrayList{
         updateWater();
         if (get(4) == null && !voided){
             ground.checkFertility();
+        }
+        
+        if (plant != null && r.nextInt(100) <= 1000){
+            plant.grow();
         }
     }
     
@@ -131,5 +139,15 @@ public class Coordinate extends ArrayList{
         voided = false;
         source = new WaterSource(map, xPos, yPos);
         set(3, source);
+    }
+    
+    public void setGrass() {
+        if (!voided && ground.getFertility() > 2 && !ground.isChannel() && getWaterLevel() < 10 && get(2) == null){
+            removeWater();
+            plant = new Grass(map, xPos, yPos);
+            set(2, plant);
+        } else if (get(2) != null){
+            plant.grow();
+        }
     }
 }
