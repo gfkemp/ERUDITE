@@ -15,6 +15,8 @@ import java.util.Random;
 public class Map {
     private int height = 25;
     private int width = 36;
+    private long totalTime;
+    private int count;
     private Char character;
     private WaterSource source;
     
@@ -108,6 +110,8 @@ public class Map {
             getCoordinate(xPos, yPos).groundVoid();
         } else if (movement[6] == 1){
             getCoordinate(xPos, yPos).setGrass();
+        } else if (movement[7] == 1){
+            getCoordinate(xPos, yPos).dropWater(70);
         }
         
         yPos += movement[0];
@@ -132,11 +136,22 @@ public class Map {
     }
     
     public void update(){
+        long tStart = System.currentTimeMillis();
+        
         for (Coordinate coordinate : coordinates){
             coordinate.update();
         }
         
         shuffle(coordinates);
+        
+        long tEnd = System.currentTimeMillis();
+        totalTime = totalTime + (tEnd - tStart);
+        count++;
+        if (count == 10){
+            System.out.println(totalTime);
+            totalTime = 0;
+            count = 0;
+        }
     }
     
     public Coordinate getCoordinate(int xPos, int yPos){
@@ -166,5 +181,9 @@ public class Map {
 
     public int getWidth() {
         return width;
+    }
+    
+    public Char getChar(){
+        return character;
     }
 }

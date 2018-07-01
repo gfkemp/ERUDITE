@@ -36,12 +36,26 @@ public class Water extends Thing{
     public String depthToSymbol(){
         return Integer.toString(depth/10);
     }
-    
+    /*
+        int pX = r.nextInt(3) - 1;
+        int pY = r.nextInt(3) - 1;
+        
+        int newX = pX + xPos;
+        int newY = pY + yPos;
+        
+        if (pX != 0 || pY != 0){
+            if (newX < map.getWidth() && newX >= 0 && newY < map.getHeight() && newY >= 0){
+                map.getCoordinate(newX, newY).setGrass();
+            }
+        }
+    */
     public void flow(){
         ArrayList<Coordinate> nearTiles = new ArrayList();
         for (int y = -1; y <= 1; y++){
             for (int x = -1; x <= 1; x++){
-                nearTiles.add(map.getCoordinate(x + xPos, y + yPos));
+                if (x + xPos < map.getWidth() && x + xPos >= 0 && y + yPos < map.getHeight() && y + yPos >= 0){
+                    nearTiles.add(map.getCoordinate(x + xPos, y + yPos));
+                }
             }
         }
         

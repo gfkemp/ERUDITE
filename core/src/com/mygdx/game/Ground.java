@@ -72,27 +72,18 @@ public class Ground extends Thing {
         return channel;
     }
     
-    public void checkFertility(){
-        int waterSupply = map.getCoordinate(xPos, yPos+1).getWaterLevel() +
-                          map.getCoordinate(xPos+1, yPos).getWaterLevel() +
-                          map.getCoordinate(xPos, yPos-1).getWaterLevel() +
-                          map.getCoordinate(xPos-1, yPos).getWaterLevel();
-        if (waterSupply > 100){
+    public void checkFertility(int waterSupply){
+        if (waterSupply >= 60){
             fertility = 4;
-        } else if (waterSupply > 60){
+        } else if (waterSupply > 45){
             fertility = 3;
         } else if (waterSupply > 30){
             fertility = 2;
         } else if (waterSupply > 15){
-            fertility = 2;
+            fertility = 1;
         } else {
             setColour("[WHITE]");
         }
-        
-        waterSupply = Math.min(waterSupply, 100);
-        String r = Integer.toHexString((int) (255 - (waterSupply*1.5)));
-        String g = Integer.toHexString((int) (255 - (waterSupply*2)));
-        String b = Integer.toHexString((int) (255 - (waterSupply*2.5)));
         
         setColour(fertileColours[fertility]);
     }
@@ -101,7 +92,15 @@ public class Ground extends Thing {
         return fertility;
     }
 
-    public void setFertility(int fertility) {
-        this.fertility = fertility;
+    public void addFertility(int add){
+        fertility += add;
+        
+        if (fertility > 4){
+            fertility = 4;
+        } else if (fertility < 0){
+            fertility = 0;
+        }
+        
+        setColour(fertileColours[fertility]);
     }
 }

@@ -21,20 +21,29 @@ public class Coordinate extends ArrayList{
     private Ground ground;
     private Plant plant;
     private Random r;
-    private boolean voided = false;
+    boolean voided = false;
     
     public Coordinate(Map map, int xPos, int yPos){
         this.map = map;
         this.xPos = xPos;
         this.yPos = yPos;
+        
         for (int i = 0; i < 6; i++){
             add(null);
-        }
+        } 
+        /* 
+        0 = ground
+        1 = null
+        2 = plant
+        3 = water source
+        4 = water
+        5 = char
+        */
         
         r = new Random();
         
         ground = new Ground(map, xPos, yPos);
-        ground.setFertility(r.nextInt(5));
+        //ground.addFertility(4);
         water = new Water(map, xPos, yPos, 0);
         
         source = null;
@@ -67,11 +76,8 @@ public class Coordinate extends ArrayList{
     
     public void update(){
         updateWater();
-        if (get(4) == null && !voided){
-            ground.checkFertility();
-        }
         
-        if (plant != null && r.nextInt(100) <= 1000){
+        if (get(2) != null){
             plant.grow();
         }
     }
@@ -81,8 +87,24 @@ public class Coordinate extends ArrayList{
             source.flow();
         }
         
-        if (getWaterLevel() > 1){
+        int waterlevel = getWaterLevel();
+        
+        if (waterlevel > 1){
             water.flow();
+            
+            if (waterlevel > 20){
+                int x = r.nextInt(3)-1;
+                int y = r.nextInt(3)-1;
+
+                if (x != 0 || y != 0){
+                    if (x + xPos < map.getWidth() && x + xPos >= 0 && y + yPos < map.getHeight() && y + yPos >= 0){
+                        Coordinate coord = map.getCoordinate(x + xPos, y + yPos);
+                        if (coord.getWaterLevel() == 0 && coord.ground.getFertility() < 4 && !coord.ground.isChannel() && !coord.voided){
+                            coord.ground.checkFertility(waterlevel);
+                        }
+                    }
+                }
+            }
         }
     }
     
@@ -91,8 +113,35 @@ public class Coordinate extends ArrayList{
         set(4, water);
     }
     
+    public void dropWater(int waterDrop){
+        if (ground.isChannel() && !voided){
+            water.add(waterDrop);
+            set(4, water);
+        } else if (!voided){
+            ground.addFertility(1);
+            int nextDrop = waterDrop - 10;
+            if (nextDrop > 10){
+                dropWater(nextDrop);
+                selectRandomAdjCoordinate().dropWater(0);
+            }
+        }
+    }
+    
+    public Coordinate selectRandomAdjCoordinate(){
+        int newX = xPos + r.nextInt(3)-1;
+        int newY = yPos + r.nextInt(3)-1;
+        while (newX == xPos && newY == yPos 
+                || newX < 0 || newX >= map.getWidth() 
+                || newY < 0 || newY >= map.getHeight()){
+            newX = xPos + r.nextInt(3)-1;
+            newY = yPos + r.nextInt(3)-1;
+        }
+        return map.getCoordinate(newX, newY);
+    }
+    
     public void groundVoid(){
         ground.channel();
+        ground.addFertility(-100);
         this.ground.symbol = " ";
         this.voided = true;
         removeWater();
@@ -130,8 +179,9 @@ public class Coordinate extends ArrayList{
     }
 
     public void setGround() {
-        voided = false;
-        set(0, new Ground(map, xPos, yPos));
+        this.voided = false;
+        ground = new Ground(map, xPos, yPos);
+        set(0, ground);
         removeWater();
     }
 

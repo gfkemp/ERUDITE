@@ -29,4 +29,8 @@ public class Plant extends Thing{
     public void spread(){
         
     }
+    
+    public void die(){
+        map.getCoordinate(xPos, yPos).set(2, null);
+    }
 }

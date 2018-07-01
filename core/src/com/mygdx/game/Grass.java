@@ -19,7 +19,7 @@ public class Grass extends Plant{
         super(map, xPos, yPos);
         growthStages = new String[3];
         growthStages[0] = ".";
-        growthStages[1] = ",";
+        growthStages[1] = "";
         growthStages[2] = "w";//"„";
         setGrowthSymbol();
         r = new Random();
@@ -31,30 +31,46 @@ public class Grass extends Plant{
     
     @Override
     public void grow(){
-        if (stage < 2){
+        if (stage < 2 && r.nextInt(100) <= 1){
             stage++;
             setGrowthSymbol();
-        } else {
-            spread();
+            if (stage == 2){
+                spread();
+            }
+        } else if (stage == 2 && map.getCoordinate(this) == map.getCoordinate(map.getChar())) {
+            stage = 0;
+            setGrowthSymbol();
         }
     }
     
     @Override
     public void spread(){
-        int pX = r.nextInt(3) - 1;
-        int pY = r.nextInt(3) - 1;
+        int planted = 0;
+        int count = 0;
         
-        int newX = pX + xPos;
-        int newY = pY + yPos;
-        
-        if (pX != 0 || pY != 0){
-            if (newX < map.getWidth() && newX >= 0 && newY < map.getHeight() && newY >= 0){
-                map.getCoordinate(newX, newY).setGrass();
+        while (planted < 9 && count < 30){
+            int pX = r.nextInt(3) - 1;
+            int pY = r.nextInt(3) - 1;
+
+            int newX = pX + xPos;
+            int newY = pY + yPos;
+
+            if (pX != 0 || pY != 0){
+                if (newX < map.getWidth() && newX >= 0 && newY < map.getHeight() && newY >= 0){
+                    if (map.getCoordinate(newX, newY).get(2) == null){
+                        map.getCoordinate(newX, newY).setGrass();
+                        planted++;
+                    }
+                }
             }
+            
+            count++;
         }
     }
     
     public void setGrowthSymbol(){
         symbol = growthStages[stage];
     }
+    
+    
 }

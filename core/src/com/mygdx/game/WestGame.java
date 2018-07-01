@@ -3,6 +3,7 @@ package com.mygdx.game;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
@@ -12,6 +13,8 @@ public class WestGame extends ApplicationAdapter {
     BitmapFont font;
     SpriteBatch batch;
     Map game;
+    FPSLogger logger;
+    
     private GlyphLayout glyph;
     int count = 0;
     int wait;
@@ -20,9 +23,11 @@ public class WestGame extends ApplicationAdapter {
     public void create () {
             batch = new SpriteBatch();
             game = new Map();
+            
             font = new BitmapFont(Gdx.files.internal("data/ProggySquare.fnt"), false);
             font.getData().markupEnabled = true;
             glyph = new GlyphLayout();
+            
             game.emptyMap();
             game.placeChar();
             game.setVoid();
@@ -69,7 +74,7 @@ public class WestGame extends ApplicationAdapter {
     }
     
     public void keyPress(){
-            int[] movement = new int[7];
+            int[] movement = new int[8];
             movement[0] = 0;
             movement[1] = 0;
             movement[2] = 0;
@@ -104,6 +109,10 @@ public class WestGame extends ApplicationAdapter {
             
             if (Gdx.input.isKeyPressed(Input.Keys.S)){
                 movement[6] = 1;
+            }
+            
+            if (Gdx.input.isKeyPressed(Input.Keys.A)){
+                movement[7] = 1;
             }
             
             if (Gdx.input.isKeyPressed(Input.Keys.W)){
