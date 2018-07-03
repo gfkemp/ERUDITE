@@ -23,9 +23,18 @@ public class Map {
     private ArrayList<ArrayList<Coordinate>> map;
     private ArrayList<Coordinate> coordinates;
     
+    private ArrayList<String> logText;
+    
     public Map(){
         map = new ArrayList<ArrayList<Coordinate>>();
         coordinates = new ArrayList<Coordinate>();
+        
+        logText = new ArrayList();
+        logText.add("[#139218]>bootseq\n");
+        logText.add("[#139218]\n");
+        logText.add("[#139218]\n");
+        logText.add("[#139218]\n");
+        logText.add("[#139218]\n");
     }
     
     public void emptyMap(){
@@ -40,15 +49,43 @@ public class Map {
         }
     }
     
-    public void setVoid(){
+    public void newMap(int xPos, int yPos){
+        map = new ArrayList<ArrayList<Coordinate>>();
+        coordinates = new ArrayList<Coordinate>();
+        
+        emptyMap();
+        
+        int newX = xPos;
+        int newY = yPos;
+        
+        if (xPos == 0){
+            newX = width-2;
+        } else if (xPos == width-1){
+            newX = 1;
+        }
+        
+        if (yPos == 0){
+            newY = height-2;
+        } else if (yPos == height-1){
+            newY = 1;
+        }
+        
+        character.setxPos(newX);
+        character.setyPos(newY);
+        map.get(character.getyPos()).get(character.getxPos()).set(5, character);
+        
+        setEdge();
+    }
+    
+    public void setEdge(){
         for (int y = 0; y < height; y++){
-            getCoordinate(0, y).groundVoid();
-            getCoordinate(width-1, y).groundVoid();
+            getCoordinate(0, y).setEdge();
+            getCoordinate(width-1, y).setEdge();
         }
         
         for (int x = 0; x < width; x++){
-            getCoordinate(x, 0).groundVoid();
-            getCoordinate(x, height-1).groundVoid();
+            getCoordinate(x, 0).setEdge();
+            getCoordinate(x, height-1).setEdge();
         }
     }
     
@@ -66,9 +103,50 @@ public class Map {
         }
     }*/
     
-    public void placeChar(){
-        character = new Char(this, 5, 5);
+    public void placeChar(int x, int y){
+        character = new Char(this, x, y);
         map.get(character.getyPos()).get(character.getxPos()).set(5, character);
+    }
+    
+    public String GetBorderMap(){
+        String output = "[WHITE]";
+        for (int y = 0; y < height; y++){
+            for (int x = 0; x < width; x++){
+                if (x == 0 && y == 0){
+                    output += "╔";
+                } else if (x == width-1 && y==0 ){
+                    output += "╗";
+                } else if (x == 0 && y==height-1 ){
+                    output += "╚";
+                } else if (x == width-1 && y==height-1 ){
+                    output += "╝";
+                } else if (y == 0 || y == height-1){
+                    output += "═";
+                } else if (x == 0 || x == width-1){
+                    output += "║";
+                } else {
+                    output += " ";
+                }
+            }
+            output = output + "\n";
+        }
+        return output;
+    }
+    
+    public String getBackGroundMap(){
+        String output = "[WHITE]";
+        for (int y = 0; y < height; y++){
+            for (int x = 0; x < width; x++){
+                Coordinate coordinate = getCoordinate(x, y);
+                String str = "";
+                str = coordinate.getBackGround();
+                
+                
+                output = output + str;
+            }
+            output = output + "\n";
+        }
+        return output;
     }
     
     public String getMap(){
@@ -102,16 +180,30 @@ public class Map {
         
         if (movement[2] == 1){
             getCoordinate(xPos, yPos).setGround();
+            logText("deposit earth");
         } else if (movement[3] == 1){
             getCoordinate(xPos, yPos).digChannel();
+            logText("dig channel");
         } else if (movement[4] == 1){
             getCoordinate(xPos, yPos).setSource();
+            logText("place water source");
         } else if (movement[5] == 1){
             getCoordinate(xPos, yPos).groundVoid();
+            logText("void ground");
         } else if (movement[6] == 1){
             getCoordinate(xPos, yPos).setGrass();
+            logText("plant grass seed");
         } else if (movement[7] == 1){
-            getCoordinate(xPos, yPos).dropWater(70);
+            if (character.getWaterStore() > 0){
+                logText("dropped " + character.getWaterStore() + " litres of water");
+                getCoordinate(xPos, yPos).dropWater(character.dropWaterStore());
+            } else {
+                if (getCoordinate(xPos, yPos).getWaterLevel() > 0){
+                    character.setWaterStore(getCoordinate(xPos, yPos).getWaterLevel());
+                    getCoordinate(xPos, yPos).setWaterLevel(0);
+                    logText("picked up " + character.getWaterStore() + " litres of water");
+                }
+            }
         }
         
         yPos += movement[0];
@@ -132,26 +224,20 @@ public class Map {
         character.setyPos(yPos);
         map.get(character.getyPos()).get(character.getxPos()).set(5, character);
         
-        update();
+        if (getCoordinate(xPos, yPos).edge){
+            newMap(xPos, yPos);
+        } else { 
+            update();
+        }
     }
     
     public void update(){
-        long tStart = System.currentTimeMillis();
-        
         for (Coordinate coordinate : coordinates){
             coordinate.update();
         }
         
-        shuffle(coordinates);
+        //shuffle(coordinates);
         
-        long tEnd = System.currentTimeMillis();
-        totalTime = totalTime + (tEnd - tStart);
-        count++;
-        if (count == 10){
-            System.out.println(totalTime);
-            totalTime = 0;
-            count = 0;
-        }
     }
     
     public Coordinate getCoordinate(int xPos, int yPos){
@@ -185,5 +271,17 @@ public class Map {
     
     public Char getChar(){
         return character;
+    }
+    
+    
+    public void logText(String newLine){
+        logText.add(0, "[#139218]>" + newLine + "\n");
+        if (logText.size() > 5){
+            logText.remove(5);
+        }
+    }
+    
+    public String genLog(){
+        return "[#139218]---\n"+ logText.get(4) + logText.get(3) + logText.get(2) + logText.get(1) + logText.get(0) + "[#139218]---\n";
     }
 }

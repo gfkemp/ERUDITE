@@ -20,6 +20,7 @@ public class WaterSource extends Thing{
         this.xPos = xPos;
         this.yPos = yPos;
         
+        this.map.getCoordinate(xPos, yPos).backgroundColour = "[#3c8cba]";
         origin = new Water(map, xPos, yPos, 0);
         symbol = "O";
     }

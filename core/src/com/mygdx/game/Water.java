@@ -15,6 +15,7 @@ import java.util.Random;
 public class Water extends Thing{
     
     private int depth;
+    private Random r;
     
     public Water(Map map, int xPos, int yPos, int depth){
         this.map = map;
@@ -22,6 +23,7 @@ public class Water extends Thing{
         this.yPos = yPos;
         this.depth = depth;
         symbol = depthToSymbol();
+        r = new Random();
     }
     
     public void add(int amount){
@@ -30,7 +32,7 @@ public class Water extends Thing{
         if (depth > 70){
             depth = 70;
         }
-        symbol = depthToSymbol();
+        setSymbol();
     }
     
     public String depthToSymbol(){
@@ -81,11 +83,14 @@ public class Water extends Thing{
             while (0 < (depth - avg)){
                 Random r = new Random();
                 int index = r.nextInt(nearTiles.size());
-
+                
                 nearTiles.get(index).flow(1);
                 depth--;
+                
+                updateBG();
             }
         }
+        
         
         /*
         for (Ground ground : nearTiles){
@@ -109,10 +114,29 @@ public class Water extends Thing{
         this.depth = depth;
     }
     
+    public void setSymbol(){
+        int i = r.nextInt(50);
+        switch (i) {
+            case 0:
+                symbol = "▓";
+                break;
+            case 1:
+                symbol = "*";
+                break;
+            default:
+                symbol = " ";
+                break;
+        }
+    }
+    
     @Override
     public String toString(){
+        return "[#FFFFFF]" + symbol;
+    }
+    
+    public void updateBG(){
         colour = Integer.toHexString(200-(depth*2));
         String colour2 = Integer.toHexString(200-depth);
-        return "[#" + colour + colour2 + "FF]" + depthToSymbol();
+        map.getCoordinate(xPos, yPos).backgroundColour = "[#" + colour + colour2 + "FF]";
     }
 }

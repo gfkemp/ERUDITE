@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import java.util.ArrayList;
 
 public class WestGame extends ApplicationAdapter {
     BitmapFont font;
@@ -18,23 +19,31 @@ public class WestGame extends ApplicationAdapter {
     private GlyphLayout glyph;
     int count = 0;
     int wait;
+    String framerate = "0";
+    long rendercalls = 0;
+    long tStart;
 
     @Override
     public void create () {
+            Gdx.graphics.setWindowedMode(800, 600);
             batch = new SpriteBatch();
             game = new Map();
             
-            font = new BitmapFont(Gdx.files.internal("data/ProggySquare.fnt"), false);
+            font = new BitmapFont(Gdx.files.internal("data/topaz8.fnt"), false);
             font.getData().markupEnabled = true;
             glyph = new GlyphLayout();
             
             game.emptyMap();
-            game.placeChar();
-            game.setVoid();
+            game.placeChar(5, 5);
+            game.setEdge();
     }
 
     @Override
     public void render () {
+            if (tStart == 0){
+                tStart = System.currentTimeMillis();
+            }
+        
             Gdx.gl.glClearColor(0, 0, 0, 1);
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
             
@@ -51,9 +60,31 @@ public class WestGame extends ApplicationAdapter {
             batch.begin();
             count--;
             //game.placeChar();
+            
+            glyph.setText(font, game.genLog());
+            font.draw(batch, glyph, 25, 130);
+            
+            glyph.setText(font, game.getBackGroundMap());
+            font.draw(batch, glyph, 15, 585);
             glyph.setText(font, game.getMap());
-            font.draw(batch, glyph, 15, 470);
+            font.draw(batch, glyph, 15, 585);
             //System.out.print(game.getMap());
+            
+            glyph.setText(font, game.GetBorderMap());
+            font.draw(batch, glyph, 20, 585);
+            
+            
+            rendercalls++;
+            
+            if (rendercalls >= 10){
+                long tEnd = System.currentTimeMillis();
+                framerate = Long.toString(rendercalls*1000/(tEnd-tStart));
+                rendercalls = 0;
+                tStart = 0;
+            }
+
+            glyph.setText(font, framerate);
+            font.draw(batch, glyph, 100, 20);
             batch.end();
     }
     
@@ -117,6 +148,7 @@ public class WestGame extends ApplicationAdapter {
             
             if (Gdx.input.isKeyPressed(Input.Keys.W)){
                 wait = 90;
+                game.logText("wait");
             }
             
             game.moveChar(movement);

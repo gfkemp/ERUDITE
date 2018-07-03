@@ -5,6 +5,8 @@
  */
 package com.mygdx.game;
 
+import java.util.Random;
+
 /**
  *
  * @author gregclemp
@@ -14,21 +16,34 @@ public class Ground extends Thing {
     private boolean channel;
     private int fertility;
     private String[] fertileColours;
+    private Random r;
     
     public Ground(Map map, int xPos, int yPos){
         this.map = map;
         this.xPos = xPos;
         this.yPos = yPos;
+        r = new Random();
         fertility = 0;
         
         fertileColours = new String[5];
-        fertileColours[0] = "[WHITE]";
+        switch (r.nextInt(3)){
+            default:
+            case 0:
+                fertileColours[0] = "[#113b3a]";
+            case 1:
+                fertileColours[0] = "[#195351]";
+                break;
+            case 2:
+                fertileColours[0] = "[#b2c9c3]";
+                break;
+        }
+        
         fertileColours[1] = "[#E1D7CD]";
         fertileColours[2] = "[#DBB7A2]";
         fertileColours[3] = "[#C19270]";
         fertileColours[4] = "[#997652]";
         
-        
+        this.colour = fertileColours[fertility];
         symbolGen();
     }
     
@@ -86,6 +101,7 @@ public class Ground extends Thing {
         }
         
         setColour(fertileColours[fertility]);
+        this.map.getCoordinate(xPos, yPos).backgroundColour = "[#195351]";
     }
 
     public int getFertility() {
@@ -102,5 +118,6 @@ public class Ground extends Thing {
         }
         
         setColour(fertileColours[fertility]);
+        this.map.getCoordinate(xPos, yPos).backgroundColour = "[#195351]";
     }
 }

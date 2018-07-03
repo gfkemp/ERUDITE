@@ -22,6 +22,9 @@ public class Coordinate extends ArrayList{
     private Plant plant;
     private Random r;
     boolean voided = false;
+    boolean edge = false;
+    String background = "▌";
+    String backgroundColour = "[#113b3a]";
     
     public Coordinate(Map map, int xPos, int yPos){
         this.map = map;
@@ -144,6 +147,17 @@ public class Coordinate extends ArrayList{
         ground.addFertility(-100);
         this.ground.symbol = " ";
         this.voided = true;
+        this.background = " ";
+        removeWater();
+    }
+    
+    public void setEdge() {
+        ground.channel();
+        ground.addFertility(-100);
+        this.ground.symbol = " ";
+        this.voided = true;
+        this.edge = true;
+        this.background = " ";
         removeWater();
     }
 
@@ -162,6 +176,12 @@ public class Coordinate extends ArrayList{
         return water.getDepth();
     }
     
+    public void setWaterLevel(int level) {
+        if (get(4) != null){
+            set(4, new Water(map, xPos, yPos, level));
+        }
+    }
+    
     public boolean isChannel(){
         return ground.isChannel();
     }
@@ -170,6 +190,7 @@ public class Coordinate extends ArrayList{
         if (!voided){
             ground.channel();
             removeWater();
+            backgroundColour = "[#113b3a]";
         }
     }
     
@@ -180,6 +201,7 @@ public class Coordinate extends ArrayList{
 
     public void setGround() {
         this.voided = false;
+        this.background = "▌";
         ground = new Ground(map, xPos, yPos);
         set(0, ground);
         removeWater();
@@ -200,4 +222,15 @@ public class Coordinate extends ArrayList{
             plant.grow();
         }
     }
+
+    public void setBackGroundColour(String colour) {
+        backgroundColour = colour;
+    }
+    
+    public String getBackGround(){
+        String output = backgroundColour + background;
+        return output;
+    }
+
+    
 }

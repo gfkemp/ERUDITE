@@ -17,16 +17,19 @@ public class Grass extends Plant{
     
     public Grass(Map map, int xPos, int yPos){
         super(map, xPos, yPos);
-        growthStages = new String[3];
-        growthStages[0] = ".";
-        growthStages[1] = "";
-        growthStages[2] = "w";//"„";
-        setGrowthSymbol();
         r = new Random();
         
+        growthStages = new String[3];
+        growthStages[0] = "[#113b3a]▓[]";
+        growthStages[1] = "▓";
+        growthStages[2] = "[#00" + 
+                    Integer.toHexString(r.nextInt(25)+125)
+                     + "00AA]▓[]";//"„";
+        setGrowthSymbol();
+        
         colour = "[#00" + 
-                Integer.toHexString(r.nextInt(50)+100)
-                + "00]";
+                Integer.toHexString(r.nextInt(25)+125)
+                + "00AA]";
     }
     
     @Override
@@ -36,6 +39,7 @@ public class Grass extends Plant{
             setGrowthSymbol();
             if (stage == 2){
                 spread();
+                this.map.getCoordinate(xPos, yPos).backgroundColour = colour;
             }
         } else if (stage == 2 && map.getCoordinate(this) == map.getCoordinate(map.getChar())) {
             stage = 0;
