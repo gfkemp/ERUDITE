@@ -5,6 +5,8 @@
  */
 package com.mygdx.game;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author gregclemp
@@ -52,6 +54,10 @@ public class Thing {
     
     public String getSymbol(){
         return symbol;
+    }
+    
+    public void trample(){
+        
     }
     
     @Override

@@ -29,8 +29,8 @@ public class Water extends Thing{
     public void add(int amount){
         this.depth += amount;
         
-        if (depth > 70){
-            depth = 70;
+        if (depth > 700){
+            depth = 700;
         }
         setSymbol();
     }
@@ -55,8 +55,17 @@ public class Water extends Thing{
         ArrayList<Coordinate> nearTiles = new ArrayList();
         for (int y = -1; y <= 1; y++){
             for (int x = -1; x <= 1; x++){
-                if (x + xPos < map.getWidth() && x + xPos >= 0 && y + yPos < map.getHeight() && y + yPos >= 0){
-                    nearTiles.add(map.getCoordinate(x + xPos, y + yPos));
+                Coordinate coord = map.getCoordinate(x + xPos, y + yPos);
+                if (!coord.edge){
+                    nearTiles.add(coord);
+                } else {
+                    ArrayList cache = map.getNextMapCache(x + xPos, y + yPos);
+                    Map nextMap = (Map) cache.get(0);
+                    //int newX = (Integer) cache.get(1);
+                    //int newY = (Integer) cache.get(2);
+                    if (nextMap != null){
+                        nearTiles.add(nextMap.getCoordinate((Integer) cache.get(1), (Integer) cache.get(2)));
+                    }
                 }
             }
         }
@@ -135,8 +144,8 @@ public class Water extends Thing{
     }
     
     public void updateBG(){
-        colour = Integer.toHexString(200-(depth*2));
-        String colour2 = Integer.toHexString(200-depth);
+        colour = Integer.toHexString(200-(depth/5));
+        String colour2 = Integer.toHexString(200-(depth/10));
         map.getCoordinate(xPos, yPos).backgroundColour = "[#" + colour + colour2 + "FF]";
     }
 }

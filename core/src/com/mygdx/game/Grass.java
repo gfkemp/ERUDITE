@@ -5,7 +5,10 @@
  */
 package com.mygdx.game;
 
+import java.util.ArrayList;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -41,7 +44,17 @@ public class Grass extends Plant{
                 spread();
                 this.map.getCoordinate(xPos, yPos).backgroundColour = colour;
             }
-        } else if (stage == 2 && map.getCoordinate(this) == map.getCoordinate(map.getChar())) {
+        } /*else {
+            if (stage == 2 && map.getCoordinate(this).getCharacter() != null) {
+                stage = 0;
+                setGrowthSymbol();
+            }
+        } */
+    }
+    
+    @Override
+    public void trample(){
+        if (stage == 2) {
             stage = 0;
             setGrowthSymbol();
         }
@@ -60,9 +73,19 @@ public class Grass extends Plant{
             int newY = pY + yPos;
 
             if (pX != 0 || pY != 0){
-                if (newX < map.getWidth() && newX >= 0 && newY < map.getHeight() && newY >= 0){
+                if (newX < map.getWidth()-1 && newX >= 1 && newY < map.getHeight()-1 && newY >= 1){
                     if (map.getCoordinate(newX, newY).get(2) == null){
                         map.getCoordinate(newX, newY).setGrass();
+                        planted++;
+                    }
+                } else {
+                    //world map logic
+                    ArrayList cache = map.getNextMapCache(newX, newY);
+                    Map nextMap = (Map) cache.get(0);
+                    newX = (Integer) cache.get(1);
+                    newY = (Integer) cache.get(2);
+                    if (nextMap != null && nextMap.getCoordinate(newX, newY).get(2) == null){
+                        nextMap.getCoordinate(newX, newY).setGrass();
                         planted++;
                     }
                 }

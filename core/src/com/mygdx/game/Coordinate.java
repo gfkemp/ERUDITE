@@ -12,7 +12,7 @@ import java.util.Random;
  *
  * @author gregclemp
  */
-public class Coordinate extends ArrayList{
+public class Coordinate extends ArrayList<Thing>{
     private Map map;
     private int xPos;
     private int yPos;
@@ -25,6 +25,7 @@ public class Coordinate extends ArrayList{
     boolean edge = false;
     String background = "▌";
     String backgroundColour = "[#113b3a]";
+    int lightLevel;
     
     public Coordinate(Map map, int xPos, int yPos){
         this.map = map;
@@ -50,6 +51,8 @@ public class Coordinate extends ArrayList{
         water = new Water(map, xPos, yPos, 0);
         
         source = null;
+        
+        lightLevel = r.nextInt(2);
         
         set(0, ground);
     }
@@ -214,7 +217,7 @@ public class Coordinate extends ArrayList{
     }
     
     public void setGrass() {
-        if (!voided && ground.getFertility() > 2 && !ground.isChannel() && getWaterLevel() < 10 && get(2) == null){
+        if (!voided && ground.getFertility() > 2 && !ground.isChannel() && getWaterLevel() < 10){
             removeWater();
             plant = new Grass(map, xPos, yPos);
             set(2, plant);
@@ -232,5 +235,25 @@ public class Coordinate extends ArrayList{
         return output;
     }
 
-    
+    public int getLightLevel() {
+        return lightLevel;
+    }
+
+    public void setLightLevel(int lightLevel) {
+        this.lightLevel = lightLevel;
+    }
+
+    public Char getCharacter(){
+        return (Char) get(5);
+    }
+
+    public void setSpore() {
+        if (!voided && !ground.isChannel() && getWaterLevel() < 10){
+            removeWater();
+            plant = new Fungus(map, xPos, yPos);
+            set(2, plant);
+        } else if (get(2) != null){
+            plant.grow();
+        }
+    }
 }

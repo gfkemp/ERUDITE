@@ -8,12 +8,13 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import java.util.ArrayList;
+import java.util.HashMap;
 
 public class WestGame extends ApplicationAdapter {
     BitmapFont font;
     SpriteBatch batch;
-    Map game;
+    World world;
+    MapController game;
     FPSLogger logger;
     
     private GlyphLayout glyph;
@@ -22,20 +23,23 @@ public class WestGame extends ApplicationAdapter {
     String framerate = "0";
     long rendercalls = 0;
     long tStart;
+    
+    String controls;
 
     @Override
     public void create () {
-            Gdx.graphics.setWindowedMode(800, 600);
+            Gdx.graphics.setWindowedMode(900, 600);
             batch = new SpriteBatch();
-            game = new Map();
+            world = new World();
+            game = new MapController(world);
             
             font = new BitmapFont(Gdx.files.internal("data/topaz8.fnt"), false);
             font.getData().markupEnabled = true;
             glyph = new GlyphLayout();
             
-            game.emptyMap();
             game.placeChar(5, 5);
-            game.setEdge();
+            
+            controls = "w - wait 100 ticks\na - open tank\ns - plant seed\nd - plant spore\nz - place ground\nx - dig channel\nc - place spring\nv - void ground\n";
     }
 
     @Override
@@ -68,12 +72,27 @@ public class WestGame extends ApplicationAdapter {
             font.draw(batch, glyph, 15, 585);
             glyph.setText(font, game.getMap());
             font.draw(batch, glyph, 15, 585);
-            //System.out.print(game.getMap());
+            glyph.setText(font, game.getLightMap());
+            font.draw(batch, glyph, 15, 585);
             
-            glyph.setText(font, game.GetBorderMap());
+            glyph.setText(font, game.getBorderMap());
             font.draw(batch, glyph, 20, 585);
-            
-            
+            /*----------/
+            HashMap<String, String> maps = game.getMaps();
+            glyph.setText(font, maps.get("backgroundMap"));
+            font.draw(batch, glyph, 15, 585);
+            glyph.setText(font, maps.get("objectMap"));
+            font.draw(batch, glyph, 15, 585);
+            //glyph.setText(font, maps.get("lightMap"));
+            //font.draw(batch, glyph, 15, 585);
+            glyph.setText(font, maps.get("borderMap"));
+            font.draw(batch, glyph, 20, 585); 
+            //System.out.print(game.getMap());
+            /*
+            */
+            glyph.setText(font, controls);
+            font.draw(batch, glyph, 600, 585);
+            //TEST THIS!
             rendercalls++;
             
             if (rendercalls >= 10){
@@ -105,7 +124,7 @@ public class WestGame extends ApplicationAdapter {
     }
     
     public void keyPress(){
-            int[] movement = new int[8];
+            int[] movement = new int[9];
             movement[0] = 0;
             movement[1] = 0;
             movement[2] = 0;
@@ -144,6 +163,10 @@ public class WestGame extends ApplicationAdapter {
             
             if (Gdx.input.isKeyPressed(Input.Keys.A)){
                 movement[7] = 1;
+            }
+            
+            if (Gdx.input.isKeyPressed(Input.Keys.D)){
+                movement[8] = 1;
             }
             
             if (Gdx.input.isKeyPressed(Input.Keys.W)){
