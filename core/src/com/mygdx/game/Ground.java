@@ -17,7 +17,10 @@ public class Ground extends Thing {
     private boolean channel;
     private int fertility;
     private String[] fertileColours;
+    private String stoneBGColour = "[#6C9190]";
+    private String dirtBGColour;
     private Random r;
+    private boolean isStone;
     
     public Ground(Map map, int xPos, int yPos){
         this.map = map;
@@ -25,9 +28,10 @@ public class Ground extends Thing {
         this.yPos = yPos;
         r = new Random();
         fertility = 0;
+        isStone = true;
         
         fertileColours = new String[5];
-        switch (r.nextInt(3)){
+        switch (r.nextInt(2)){
             default:
             case 0:
                 fertileColours[0] = "[#113b3a]";
@@ -35,7 +39,7 @@ public class Ground extends Thing {
                 fertileColours[0] = "[#195351]";
                 break;
             case 2:
-                fertileColours[0] = "[#b2c9c3]";
+                //fertileColours[0] = "[#b2c9c3]";
                 break;
         }
         
@@ -50,14 +54,16 @@ public class Ground extends Thing {
     
     public void symbolGen(){
         double r = Math.random();
-        r = r*100;
+        r = r*60 + 40;
         if (r < 40){
-            symbol = "·";
+            symbol = " ";
         } else if (r < 50){
-            symbol = ".";
+            symbol = "·";
         } else if (r < 60){
+            symbol = ".";
+        } else if (r < 70){
             symbol = "°";
-        } else if (r < 90){
+        } else if (r < 93){
             symbol = "+";
         } else if (r < 96){
             symbol = "=";
@@ -70,13 +76,12 @@ public class Ground extends Thing {
         }
     }
     
+    public void noSymbol(){
+        symbol = " ";
+    }
+    
     public void channel(){
-        if (!channel){
-            symbol = "u";
-            channel = true;
-        } else {
-            unChannel();
-        }
+        symbolGen();
     }
     
     public void unChannel(){
@@ -110,15 +115,59 @@ public class Ground extends Thing {
     }
 
     public void addFertility(int add){
-        fertility += add;
-        
-        if (fertility > 4){
-            fertility = 4;
-        } else if (fertility < 0){
-            fertility = 0;
+        if (!isStone){
+            fertility += add;
+
+            if (fertility > 4){
+                fertility = 4;
+            } else if (fertility < 0){
+                fertility = 0;
+            }
+
+            setColour(fertileColours[fertility]);
+            this.map.getCoordinate(xPos, yPos).backgroundColour = "[#195351]";
         }
-        
-        setColour(fertileColours[fertility]);
-        this.map.getCoordinate(xPos, yPos).backgroundColour = "[#195351]";
+    }
+    
+    public boolean isStone(){
+        return isStone;
+    }
+    
+    public void turnToDirt(){
+        isStone = false;
+        dirtBGColour = fertileColours[0];
+        map.getCoordinate(this).setBackGroundColour(dirtBGColour);
+    }
+    
+    public void turnToStone(){
+        isStone = true;
+        map.getCoordinate(this).setBackGroundColour(stoneBGColour);
+    }
+    
+    public String getBGColour(){
+        if (isStone){
+            return stoneBGColour;
+        } else {
+            return dirtBGColour;
+        }
+    }
+
+    public void fertilize() {
+        if (!isStone){
+            fertility++;
+
+            if (fertility > 4){
+                fertility = 4;
+            } else if (fertility < 0){
+                fertility = 0;
+            }
+
+            setColour(fertileColours[fertility]);
+            this.map.getCoordinate(xPos, yPos).backgroundColour = "[#195351]";
+        }
+    }
+
+    public void setSymbol(Integer value) {
+        this.symbol = Integer.toString(value);
     }
 }

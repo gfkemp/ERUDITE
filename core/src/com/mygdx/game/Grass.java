@@ -20,6 +20,7 @@ public class Grass extends Plant{
     
     public Grass(Map map, int xPos, int yPos){
         super(map, xPos, yPos);
+        type = "Grass";
         r = new Random();
         
         growthStages = new String[3];
@@ -42,7 +43,7 @@ public class Grass extends Plant{
             setGrowthSymbol();
             if (stage == 2){
                 spread();
-                this.map.getCoordinate(xPos, yPos).backgroundColour = colour;
+                this.map.getCoordinate(xPos, yPos).setBackGroundColour(colour);
             }
         } /*else {
             if (stage == 2 && map.getCoordinate(this).getCharacter() != null) {

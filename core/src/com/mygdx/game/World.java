@@ -12,8 +12,8 @@ import java.util.ArrayList;
  * @author gregclemp
  */
 public class World extends ArrayList<ArrayList<Map>>{
-    int height = 3;
-    int width = 3;
+    int height = 36;
+    int width = 25;
     public World(){
         for (int y = 0; y < height; y++){
             add(new ArrayList<Map>());
@@ -40,6 +40,16 @@ public class World extends ArrayList<ArrayList<Map>>{
             return null;
         }
         return get(y).get(x);
+    }
+    
+    public ArrayList<Map> getLocalMaps(int xPos, int yPos){
+        ArrayList<Map> output = new ArrayList<Map>();
+        for (int y = yPos-1; y <= yPos+1; y++){
+            for (int x = xPos-1; x <= xPos+1; x++){
+                output.add(getMap(x, y));
+            }
+        }
+        return output;
     }
 
     public int getHeight() {

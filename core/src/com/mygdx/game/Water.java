@@ -22,15 +22,15 @@ public class Water extends Thing{
         this.xPos = xPos;
         this.yPos = yPos;
         this.depth = depth;
-        symbol = depthToSymbol();
+        symbol = " ";//depthToSymbol();
         r = new Random();
     }
     
     public void add(int amount){
         this.depth += amount;
         
-        if (depth > 700){
-            depth = 700;
+        if (depth > 100){
+            depth = 100;
         }
         setSymbol();
     }
@@ -52,6 +52,36 @@ public class Water extends Thing{
         }
     */
     public void flow(){
+        if (depth <= 5){
+            if (depth == 0){
+                updateBG();
+            } else if (r.nextInt(20) == 1){
+                depth--;
+                map.getCoordinate(this).getGround().fertilize();
+                map.getCoordinate(this).setBackgroundToGround();
+            }
+        } else {
+            int groundDepth = map.getCoordinate(xPos, yPos).getDepth();
+            int totalDepth = groundDepth - depth;
+            
+            ArrayList<Coordinate> nearTiles = map.getSurroundingCoordinates(xPos, yPos);
+            
+            int count = 0;
+            while (thisTotalDepthLess(nearTiles) && count < 20){ //local totaldepths unequal
+                for (Coordinate coordinate : nearTiles){
+                    if (coordinate.getTotalDepth() > totalDepth && depth > 1){
+                        int waterFlow = 1;
+                        coordinate.getWater().addWater(waterFlow);
+                        addWater(-waterFlow);
+                        totalDepth = groundDepth - depth;
+                    }
+                }
+                count ++;
+            }
+        }
+        
+        
+        /*
         ArrayList<Coordinate> nearTiles = new ArrayList();
         for (int y = -1; y <= 1; y++){
             for (int x = -1; x <= 1; x++){
@@ -98,7 +128,7 @@ public class Water extends Thing{
                 
                 updateBG();
             }
-        }
+        }*/
         
         
         /*
@@ -117,6 +147,11 @@ public class Water extends Thing{
 
     public int getDepth() {
         return depth;
+    }
+    
+    public void addWater(int water){
+        this.depth += water;
+        updateBG();
     }
     
     public void setDepth(int depth) {
@@ -144,8 +179,25 @@ public class Water extends Thing{
     }
     
     public void updateBG(){
-        colour = Integer.toHexString(200-(depth/5));
-        String colour2 = Integer.toHexString(200-(depth/10));
-        map.getCoordinate(xPos, yPos).backgroundColour = "[#" + colour + colour2 + "FF]";
+        if (depth > 100){
+            map.getCoordinate(xPos, yPos).backgroundColour = "[#0052FF]";
+        } else if (depth > 0){
+            colour = Integer.toHexString(220-(depth*220/100));
+            String colour2 = Integer.toHexString(220-(depth*155/100));
+            map.getCoordinate(xPos, yPos).backgroundColour = "[#" + colour + colour2 + "FF]";
+        } else {
+            //map.getCoordinate(this).setBackgroundToGround();
+        }
+    }
+
+    private boolean thisTotalDepthLess(ArrayList<Coordinate> nearTiles) {
+        boolean output = false;
+        int totalDepth = map.getCoordinate(this).getDepth() - this.depth;
+        for (Coordinate coordinate : nearTiles){
+            if (totalDepth < coordinate.getTotalDepth()){
+                output = true;
+            }
+        }
+        return output;
     }
 }

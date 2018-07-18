@@ -18,6 +18,7 @@ public class Thing {
     protected Map map;
     protected int xPos;
     protected int yPos;
+    protected int faec = 0;
     
     public Thing(){
     }
@@ -60,6 +61,10 @@ public class Thing {
         
     }
     
+    public void move(){
+        
+    }
+    
     @Override
     public String toString(){
         return colour + symbol;
@@ -83,5 +88,21 @@ public class Thing {
 
     public void setColour(String colour) {
         this.colour = colour;
+    }
+
+    public Map getMap() {
+        return map;
+    }
+
+    public void setMap(Map map) {
+        this.map = map;
+    }
+
+    public int getFaec() {
+        return faec;
+    }
+
+    public void setFaec(int faec) {
+        this.faec = faec;
     }
 }

@@ -15,6 +15,7 @@ public class Plant extends Thing{
     
     protected String[] growthStages;
     protected int stage;
+    protected String type = "";
     
     public Plant(Map map, int xPos, int yPos){
         this.map = map;
@@ -34,5 +35,9 @@ public class Plant extends Thing{
     
     public void die(){
         map.getCoordinate(xPos, yPos).set(2, null);
+    }
+    
+    public String getType(){
+        return type;
     }
 }

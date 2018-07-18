@@ -28,7 +28,8 @@ public class WaterSource extends Thing{
     public void flow(){
         Coordinate coordinate = map.getCoordinate(xPos, yPos);
         if (coordinate.contains(origin)){
-            origin.add(70);
+            if (coordinate.getDepth() > origin.getDepth())
+            origin.add(5);
         } else {
             coordinate.setWater(origin);
         }
